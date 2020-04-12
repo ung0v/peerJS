@@ -20,7 +20,7 @@ socket.on('CO_NGUOI_DUNG_MOI', user => {
 });
 socket.on('DANG_KY_THAT_BAI', () => alert("Vui long chon username khac !"));
 function OpenStream(){
-    const config = {audio: false, video: true};
+    const config = {audio: true, video: true};
     return navigator.mediaDevices.getUserMedia(config);
 }
 function playStream(idVideoTag, stream){
