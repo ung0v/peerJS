@@ -11,10 +11,12 @@
         <div id="chat-zone">
             <h3>Online User:</h3>
             <ul id="listUser"></ul>
-            <h3 id="my-peer">Your ID: </h3>
-            <video id="localStream" width="300" controls></video>
+            <h3 id="my-peer">Your ID: </h3><button id="share">Share Screeen</button>
+            <video id="localStream" width="300" muted="true" autoplay="autoplay"></video>
             <br /><br />
-            <video id="remoteStream" width="300" controls></video>
+            <video id="remoteStream" width="300" autoplay="autoplay"></video>
+
+            <video id="remotescreenStream" width="300" autoplay="autoplay"></video>
             <br>
             <input type="text" id="remoteId" placeholder="Remote ID">
             <button id="btnCall">Call</button>

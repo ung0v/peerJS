@@ -1,7 +1,7 @@
 const socket = io('https://limitless-cove-32591.herokuapp.com');
-
+var check;
 $('#chat-zone').hide();
-
+var liArr = [];
 socket.on('DANH_SACH_ONLINE', arrUserInfo => {
     $('#chat-zone').show();
     $('#register-zone').hide();
@@ -11,17 +11,33 @@ socket.on('DANH_SACH_ONLINE', arrUserInfo => {
     });
 });
 socket.on('AI_DO_NGAT_KET_NOI', peerId => {
-    $(`#${peerId}`).remove();
+    liArr.pop();
+    $(`#${peerId}`).remove();  
 });
 
 socket.on('CO_NGUOI_DUNG_MOI', user => {
     const {ten, peerId} = user;
     $('#listUser').append(`<li id="${peerId}">${ten}</li>`);
+    $('#listUser li').each(function (i){
+        liArr.push($(this).attr('id'));
+        console.log(liArr);
+    })
 });
 socket.on('DANG_KY_THAT_BAI', () => alert("Vui long chon username khac !"));
 function OpenStream(){
+    console.log(check);
+    if (check == 1){
+        return navigator.mediaDevices.getDisplayMedia({
+            video: true
+        });
+    }
     const config = {audio: true, video: true};
     return navigator.mediaDevices.getUserMedia(config);
+}
+function OpenMediaStream(){
+    return navigator.mediaDevices.getDisplayMedia({
+        video: true
+    });
 }
 function playStream(idVideoTag, stream){
     const video = document.getElementById(idVideoTag);
@@ -47,11 +63,11 @@ peer.on('open', function(id) {
     });
     console.log('My peer ID is: ' + id);
   });
-
+  
 //Called
-
 $('#btnCall').click(() => {
     const id = $('#remoteId').val();
+    peid = id;
     OpenStream()
     .then(stream => {
         playStream('localStream', stream);
@@ -63,11 +79,13 @@ $('#btnCall').click(() => {
 peer.on('call', call => {
     OpenStream()
     .then(stream => {
+        console.log(stream);
         call.answer(stream);
         playStream('localStream',stream);
         call.on('stream', remoteStream => playStream('remoteStream', remoteStream));
     });
 });
+
 
 $('#listUser').on('click','li', function () {
     const id = ($(this)).attr('id');
@@ -78,3 +96,35 @@ $('#listUser').on('click','li', function () {
         call.on('stream', remoteStream => playStream('remoteStream', remoteStream)); 
     })    
 });
+$('#share').click(() => {
+    const title = $('#my-peer').text();
+    const id = title.substring(8);
+    check = 1;
+    console.log(check);
+    OpenStream()
+    .then(stream => {
+        playStream('localStream', stream);
+        const call = peer.call(peid, stream);
+        call.on('stream', remoteStream => playStream('remoteStream', remoteStream));
+    });
+});
+// function onAccessApproved(id) {
+//   if (!id) {
+//     console.log("Access rejected");
+//     return;
+//   }
+//   navigator.webkitGetUserMedia({                                                                                                                                                                                                              
+//       audio: false,
+//       video: { mandatory: { chromeMediaSource: "desktop",
+//                             chromeMediaSourceId: id, 
+//                             maxWidth: screen.width,
+//                             maxHeight: screen.height,
+//                             minFrameRate: 1,
+//                             maxFrameRate: 5 }}
+//   }, gotStream, getUserMediaError);
+// }
+
+// document.querySelector('#share').addEventListener('click', function(e) {
+//   pending_request_id = chrome.desktopCapture.chooseDesktopMedia(
+//       ["screen", "window"], onAccessApproved);
+// });
