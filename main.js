@@ -1,5 +1,20 @@
 const socket = io('https://limitless-cove-32591.herokuapp.com');
+
 var check;
+
+var txtUsername = document.getElementById('txtUsername');
+var txtMessage = document.getElementById('txtMessage');
+var btnSend = document.getElementById('btnSend');
+var output = document.getElementById('output');
+    btnSend.addEventListener('click', () => {
+        socket.emit('AI_DO_VUA_NHAN_TIN', {
+            username: txtUsername.value,
+            message: txtMessage.value
+        })
+    });
+socket.on('AI_DO_VUA_NHAN_TIN', data => {
+    output.innerHTML += "<p><strong>" + data.username + "</strong>" + " : " + data.message + "</p>";  
+});
 $('#chat-zone').hide();
 var liArr = [];
 socket.on('DANH_SACH_ONLINE', arrUserInfo => {
@@ -16,12 +31,10 @@ socket.on('AI_DO_NGAT_KET_NOI', peerId => {
 });
 
 socket.on('CO_NGUOI_DUNG_MOI', user => {
+    liArr.push(user.peerId);
     const {ten, peerId} = user;
     $('#listUser').append(`<li id="${peerId}">${ten}</li>`);
-    $('#listUser li').each(function (i){
-        liArr.push($(this).attr('id'));
-        console.log(liArr);
-    })
+    console.log(liArr);
 });
 socket.on('DANG_KY_THAT_BAI', () => alert("Vui long chon username khac !"));
 function OpenStream(){
@@ -57,6 +70,7 @@ var peer = new Peer({
 peer.on('open', function(id) {
     $('#my-peer').append(id);
     $('#btnSignUp').click(() => {
+        document.styleSheets[0].disabled = true;
         const username = $('#txtUsername').val();
         socket.emit('NGUOI_DUNG_DANG_KI', { ten : username, peerId: id});
         
@@ -104,8 +118,10 @@ $('#share').click(() => {
     OpenStream()
     .then(stream => {
         playStream('localStream', stream);
-        const call = peer.call(peid, stream);
-        call.on('stream', remoteStream => playStream('remoteStream', remoteStream));
+        liArr.forEach( peerId => {
+            const call = peer.call(peerId, stream);
+            call.on('stream', remoteStream => playStream('remoteStream', remoteStream));
+        });
     });
 });
 // function onAccessApproved(id) {

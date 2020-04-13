@@ -3,15 +3,53 @@
     <head>
         <title>WebRTC</title>
         <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+        <link rel="stylesheet" media="screen" href="css/style.css">
         <script src="jquery.js"></script>
         <script src="peer.js"></script>
         <script src="socket.io.js"></script>
     </head>
+    <style>
+        #SignUp{
+            position: absolute;
+            display: block;
+            clear: both;
+            text-align: center;
+            left: 550px;
+            top: 250px;
+        }
+        #txtUsername{
+            padding: 15px;
+	        border: 1px solid #ccc;
+	        border-radius: 3px;
+	        margin-bottom: 10px;
+	        width: 100%;
+	        box-sizing: border-box;
+	        font-family: montserrat;
+	        color: #2C3E50;
+	        font-size: 13px;
+        }
+        #btnSignUp{
+            width: 100px;
+	        background: #27AE60;
+	        font-weight: bold;
+	        color: white;
+	        border: 0 none;
+	        border-radius: 1px;
+	        cursor: pointer;
+	        padding: 10px 5px;
+	        margin: 10px 5px;
+        }
+    </style>
     <body>
         <div id="chat-zone">
             <h3>Online User:</h3>
             <ul id="listUser"></ul>
-            <h3 id="my-peer">Your ID: </h3><button id="share">Share Screeen</button>
+            <div id="output"></div>
+            <input type="text" id="txtMessage" name="txtMessage" placeholder="Message...">
+            <button id="btnSend">Send</button>
+
+            <h3 id="my-peer">Your ID: </h3>
+            <button id="share">Share Screeen</button>
             <video id="localStream" width="300" muted="true" autoplay="autoplay"></video>
             <br /><br />
             <video id="remoteStream" width="300" autoplay="autoplay"></video>
@@ -23,8 +61,13 @@
             <br /><br />
         </div>
         <div id="register-zone">
-            <input type="text" id="txtUsername" name="txtUsername" placeholder="Enter your username">
+            <div id="SignUp">
+                <input type="text" id="txtUsername" name="txtUsername" placeholder="Enter your username">
             <button id="btnSignUp">Sign Up</button>
+            </div>
+            <div id="particles-js"></div>
+            <script src="particles.js"></script>
+            <script src="js/app.js"></script>
         </div>
     </body>
     <script src="main.js"></script>
