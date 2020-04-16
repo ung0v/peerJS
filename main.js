@@ -66,7 +66,7 @@ function playStream(idVideoTag, stream){
 // setup server
 var peer = new Peer({
     key: 'peerjs',
-    host:'mypeer.herokuapp.com',
+    host:'9000-ac70f3b4-0119-4717-b112-fc678069019d.ws-us02.gitpod.io',
     secure: true,
     port: 443
 });
