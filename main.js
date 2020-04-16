@@ -1,22 +1,30 @@
 const socket = io('https://limitless-cove-32591.herokuapp.com');
-
 var check;
-
 var txtUsername = document.getElementById('txtUsername');
 var txtMessage = document.getElementById('txtMessage');
 var btnSend = document.getElementById('btnSend');
 var output = document.getElementById('output');
-    btnSend.addEventListener('click', () => {
-        socket.emit('AI_DO_VUA_NHAN_TIN', {
+var liArr = [];
+
+$('#chat-zone').hide();
+
+txtMessage.addEventListener("keyup", function(event) {
+  if (event.keyCode === 13) {
+   event.preventDefault();
+   btnSend.click();
+  }
+});
+btnSend.addEventListener('click', () => {
+    socket.emit('AI_DO_VUA_NHAN_TIN', {
             username: txtUsername.value,
             message: txtMessage.value
         })
     });
 socket.on('AI_DO_VUA_NHAN_TIN', data => {
-    output.innerHTML += "<p><strong>" + data.username + "</strong>" + " : " + data.message + "</p>";  
+    output.innerHTML += "<p><strong>" + data.username + "</strong>" + " : " + data.message + "</p>";
+    txtMessage.value = "";
 });
-$('#chat-zone').hide();
-var liArr = [];
+
 socket.on('DANH_SACH_ONLINE', arrUserInfo => {
     $('#chat-zone').show();
     $('#register-zone').hide();
@@ -37,70 +45,82 @@ socket.on('CO_NGUOI_DUNG_MOI', user => {
     console.log(liArr);
 });
 socket.on('DANG_KY_THAT_BAI', () => alert("Vui long chon username khac !"));
+// Get Media Stream
 function OpenStream(){
-    console.log(check);
-    if (check == 1){
-        return navigator.mediaDevices.getDisplayMedia({
-            video: true
-        });
-    }
+
     const config = {audio: true, video: true};
+    //Get Screen Media
+    if (check == 1){
+        return navigator.mediaDevices.getDisplayMedia(config);
+    }
+    // Get Camera Video Media
     return navigator.mediaDevices.getUserMedia(config);
 }
-function OpenMediaStream(){
-    return navigator.mediaDevices.getDisplayMedia({
-        video: true
-    });
-}
+
 function playStream(idVideoTag, stream){
     const video = document.getElementById(idVideoTag);
     video.srcObject = stream;
     video.play();
 }
-// OpenStream()
-// .then(stream => playStream('localStream', stream));
 
+// setup server
 var peer = new Peer({
     key: 'peerjs',
-    host:'mypeerhost.herokuapp.com',
+    host:'mypeer.herokuapp.com',
     secure: true,
     port: 443
 });
-
+// Create Id to conncet
 peer.on('open', function(id) {
     $('#my-peer').append(id);
     $('#btnSignUp').click(() => {
         document.styleSheets[0].disabled = true;
         const username = $('#txtUsername').val();
         socket.emit('NGUOI_DUNG_DANG_KI', { ten : username, peerId: id});
-        
+        OpenStream()
+        .then(stream => {
+            playStream('localStream', stream);
+        });
+    });
+    document.getElementById('btnJoin').addEventListener('click', function (){
+        document.styleSheets[0].disabled = true;
+        const username = $('#txtUsername').val();
+        socket.emit('NGUOI_DUNG_DANG_KI', { ten : username, peerId: id});
+        peerId = document.getElementById('txtRoomId').value;
+        OpenStream()
+        .then(stream => {
+            playStream('localStream', stream);
+                const call = peer.call(peerId, stream);
+
+                call.on('stream', remoteStream => playStream('remoteStream', remoteStream));
+                
+        });
     });
     console.log('My peer ID is: ' + id);
-  });
-  
-//Called
-$('#btnCall').click(() => {
-    const id = $('#remoteId').val();
-    peid = id;
-    OpenStream()
-    .then(stream => {
-        playStream('localStream', stream);
-        const call = peer.call(id, stream);
-        call.on('stream', remoteStream => playStream('remoteStream', remoteStream)); 
-    })    
 });
 
 peer.on('call', call => {
     OpenStream()
     .then(stream => {
-        console.log(stream);
         call.answer(stream);
-        playStream('localStream',stream);
         call.on('stream', remoteStream => playStream('remoteStream', remoteStream));
     });
 });
 
+//Called
+// $('#btnCall').click(() => {
+//     const id = $('#remoteId').val();
+//     peid = id;
+//     OpenStream()
+//     .then(stream => {
+//         playStream('localStream', stream);
+//         const call = peer.call(id, stream);
+//         call.on('stream', remoteStream => playStream('remoteStream', remoteStream)); 
+//     })    
+// });
+// wait for another connect
 
+// Call by Click to User
 $('#listUser').on('click','li', function () {
     const id = ($(this)).attr('id');
     OpenStream()
@@ -110,6 +130,7 @@ $('#listUser').on('click','li', function () {
         call.on('stream', remoteStream => playStream('remoteStream', remoteStream)); 
     })    
 });
+// Share Screen
 $('#share').click(() => {
     const title = $('#my-peer').text();
     const id = title.substring(8);
@@ -124,23 +145,3 @@ $('#share').click(() => {
         });
     });
 });
-// function onAccessApproved(id) {
-//   if (!id) {
-//     console.log("Access rejected");
-//     return;
-//   }
-//   navigator.webkitGetUserMedia({                                                                                                                                                                                                              
-//       audio: false,
-//       video: { mandatory: { chromeMediaSource: "desktop",
-//                             chromeMediaSourceId: id, 
-//                             maxWidth: screen.width,
-//                             maxHeight: screen.height,
-//                             minFrameRate: 1,
-//                             maxFrameRate: 5 }}
-//   }, gotStream, getUserMediaError);
-// }
-
-// document.querySelector('#share').addEventListener('click', function(e) {
-//   pending_request_id = chrome.desktopCapture.chooseDesktopMedia(
-//       ["screen", "window"], onAccessApproved);
-// });

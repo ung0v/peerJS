@@ -17,7 +17,7 @@
             left: 550px;
             top: 250px;
         }
-        #txtUsername{
+        .input{
             padding: 15px;
 	        border: 1px solid #ccc;
 	        border-radius: 3px;
@@ -28,7 +28,7 @@
 	        color: #2C3E50;
 	        font-size: 13px;
         }
-        #btnSignUp{
+        .btn{
             width: 100px;
 	        background: #27AE60;
 	        font-weight: bold;
@@ -50,20 +50,24 @@
 
             <h3 id="my-peer">Your ID: </h3>
             <button id="share">Share Screeen</button>
-            <video id="localStream" width="300" muted="true" autoplay="autoplay"></video>
-            <br /><br />
-            <video id="remoteStream" width="300" autoplay="autoplay"></video>
-
-            <video id="remotescreenStream" width="300" autoplay="autoplay"></video>
             <br>
-            <input type="text" id="remoteId" placeholder="Remote ID">
-            <button id="btnCall">Call</button>
+        <div id="VideoController">
+            <video id="localStream" width="300" muted="true" autoplay="autoplay"></video>
+        </div>
+ 
+            <video id="remoteStream" width="300" autoplay="autoplay"></video>
+            <br>
+            <!-- <input type="text" id="remoteId" placeholder="Remote ID">
+            <button id="btnCall">Call</button> -->
             <br /><br />
         </div>
         <div id="register-zone">
             <div id="SignUp">
-                <input type="text" id="txtUsername" name="txtUsername" placeholder="Enter your username">
-            <button id="btnSignUp">Sign Up</button>
+                <input type="text" id="txtUsername" class ="input" name="txtUsername" placeholder="Enter your username">
+                <br>
+                <input type="text" id="txtRoomId" class ="input" name="txtRoomId" placeholder="Enter ID Room">
+            <button id="btnSignUp" class="btn">Create</button>
+            <button id="btnJoin" class="btn">Join</button>
             </div>
             <div id="particles-js"></div>
             <script src="particles.js"></script>
